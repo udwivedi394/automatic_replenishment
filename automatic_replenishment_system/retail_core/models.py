@@ -2,12 +2,12 @@ from django.db import models
 # Create your models here.
 from django.db.models import Model
 
-from automatic_replenishment_system.retail_core.core.constants import RANKING_MODEL_CHOICES
+from automatic_replenishment_system.retail_core.core.constants import RANKING_MODEL_CHOICES, WarehouseConstants
 
 
 class TimeStampedModel(Model):
-    created_on = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+    created_on = models.DateField(auto_now_add=True, db_index=True)
+    updated_at = models.DateField(auto_now=True, db_index=True)
 
     class Meta:
         abstract = True
@@ -65,7 +65,7 @@ class SalesTransaction(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
     store = models.ForeignKey(StoreModel, models.CASCADE)
     product = models.ForeignKey(ProductModel, models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateField()
     quantity = models.IntegerField()
 
     class Meta:
@@ -73,7 +73,7 @@ class SalesTransaction(TimeStampedModel):
         verbose_name_plural = "Sales Transactions"
 
 
-class BSQ(TimeStampedModel):
+class BSQModel(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
     store = models.ForeignKey(StoreModel, models.CASCADE)
     product = models.ForeignKey(ProductModel, models.CASCADE)
@@ -88,7 +88,7 @@ class StoreInventoryModel(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
     store = models.ForeignKey(StoreModel, models.CASCADE)
     product = models.ForeignKey(ProductModel, models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateField()
     closing_inventory = models.IntegerField()
 
     class Meta:
@@ -98,8 +98,10 @@ class StoreInventoryModel(TimeStampedModel):
 
 class WarehouseInventoryModel(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
+    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE, default=WarehouseModel.objects.get(
+        warehouse_code=WarehouseConstants.DEFAULT_WAREHOUSE_CODE))
     product = models.ForeignKey(ProductModel, models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateField()
     closing_inventory = models.IntegerField()
 
     class Meta:

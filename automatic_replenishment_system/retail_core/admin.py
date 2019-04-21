@@ -2,7 +2,9 @@
 from django.contrib import admin
 
 from automatic_replenishment_system.retail_core import models
-from automatic_replenishment_system.retail_core.core.brand.brand_input_file_generator import BrandInputFileGenerator
+from automatic_replenishment_system.retail_core.core.brand_one_time_setup.brand_input_file_generator import \
+    BrandInputFileGenerator
+from automatic_replenishment_system.retail_core.models import BrandModel
 
 
 class BrandModelAdmin(admin.ModelAdmin):
@@ -13,7 +15,7 @@ class BrandModelAdmin(admin.ModelAdmin):
     )
     search_fields = ('name',)
     # date_hierarchy = 'updated_at'
-    actions = ['gen_input_files']
+    actions = ['gen_input_files', 'upload_files']
 
     def gen_input_files(self, request, queryset):
         store_inventory = 'input_data/Store_Inventory-1.csv'
@@ -25,6 +27,16 @@ class BrandModelAdmin(admin.ModelAdmin):
         BrandInputFileGenerator(store_inventory, bsq, store_priority_static, output_product_list, output_store_list,
                                 output_warehouse_list).execute()
 
+    def upload_files(self, request, queryset):
+        brand = 'Testing_1'
+        model = 'SalesTransaction'
+        csvfile = 'input_data/Sales-1.csv'
+        brand_model = BrandModel.objects.get(name=brand)
+        from automatic_replenishment_system.retail_core.core.periodic.importer_interface import ImporterInterface
+        from automatic_replenishment_system.retail_core.core.utils.csv_utils import CSVInputOutput
+        ImporterInterface(model_name=model, brand=brand_model, file=csvfile, reader=CSVInputOutput()).execute()
+
+    upload_files.short_description = 'Upload Files'
     gen_input_files.short_description = 'Generate Input Files'
 
 
@@ -35,6 +47,7 @@ class ProductModelAdmin(admin.ModelAdmin):
         'brand_model',
     )
     list_filter = ('brand_model',)
+    search_fields = ['product_code']
     # date_hierarchy = 'updated_at'
 
 
@@ -66,12 +79,12 @@ class SalesTransactionAdmin(admin.ModelAdmin):
         'date',
         'quantity',
     )
-    list_filter = (
-        'brand_model',
-        'store',
-        'product',
-        'date',
-    )
+    # list_filter = (
+    #     'brand_model',
+    #     'store',
+    #     'product',
+    #     'date',
+    # )
     # date_hierarchy = 'updated_at'
 
 
@@ -84,11 +97,11 @@ class BSQAdmin(admin.ModelAdmin):
         'product',
         'bsq',
     )
-    list_filter = (
-        'brand_model',
-        'store',
-        'product',
-    )
+    # list_filter = (
+    #     'brand_model',
+    #     'store',
+    #     'product',
+    # )
     # date_hierarchy = 'updated_at'
 
 
@@ -102,12 +115,12 @@ class StoreInventoryModelAdmin(admin.ModelAdmin):
         'date',
         'closing_inventory',
     )
-    list_filter = (
-        'brand_model',
-        'store',
-        'product',
-        'date',
-    )
+    # list_filter = (
+    #     'brand_model',
+    #     'store',
+    #     'product',
+    #     'date',
+    # )
     # date_hierarchy = 'updated_at'
 
 
@@ -119,11 +132,11 @@ class WarehouseInventoryModelAdmin(admin.ModelAdmin):
         'date',
         'closing_inventory',
     )
-    list_filter = (
-        'brand_model',
-        'product',
-        'date',
-    )
+    # list_filter = (
+    #     'brand_model',
+    #     'product',
+    #     'date',
+    # )
     # date_hierarchy = 'updated_at'
 
 
@@ -155,7 +168,7 @@ _register(models.ProductModel, ProductModelAdmin)
 _register(models.StoreModel, StoreModelAdmin)
 _register(models.WarehouseModel, WarehouseModelAdmin)
 _register(models.SalesTransaction, SalesTransactionAdmin)
-_register(models.BSQ, BSQAdmin)
+_register(models.BSQModel, BSQAdmin)
 _register(models.StoreInventoryModel, StoreInventoryModelAdmin)
 _register(models.WarehouseInventoryModel, WarehouseInventoryModelAdmin)
 _register(models.StaticPriorityModel, StaticPriorityModelAdmin)

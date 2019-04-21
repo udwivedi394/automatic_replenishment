@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
-from automatic_replenishment_system.retail_core.core.brand.brand_saver import BrandCreationProcessManager
+from automatic_replenishment_system.retail_core.core.brand_one_time_setup.brand_saver import BrandCreationProcessManager
 from automatic_replenishment_system.retail_core.forms import BrandForm, StoreForm, ProductForm, WarehouseForm
 
 
@@ -14,7 +14,7 @@ class Brand:
 
 
 class CreateBrandView(View):
-    BRAND_FORM_PREFIX = 'brand'
+    BRAND_FORM_PREFIX = 'brand_one_time_setup'
     PRODUCT_FORM_PREFIX = 'product'
     STORE_FORM_PREFIX = 'store'
     WAREHOUSE_FORM_PREFIX = 'warehouse'
@@ -60,7 +60,7 @@ class CreateBrandView(View):
             'file_name_errors': file_name_errors,
             'csv_name_errors': csv_name_errors,
         }
-        template_name = 'brand/create_brand.html'
+        template_name = 'brand_one_time_setup/create_brand.html'
         return render(request, template_name, context)
 
     def _create_brand(self, brand, product_file, store_file, warehouse_file):

@@ -17,7 +17,7 @@ urlpatterns = [
                   path("accounts/", include("allauth.urls")),
                   # Your stuff: custom urls includes go here
                   path('api/', include('automatic_replenishment_system.retail_core.core.api.urls')),
-                  path('brand/', include('automatic_replenishment_system.retail_core.urls')),
+                  path('brand_one_time_setup/', include('automatic_replenishment_system.retail_core.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
