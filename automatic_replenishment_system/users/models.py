@@ -57,6 +57,7 @@ class StoreModel(TimeStampedModel):
 class WarehouseModel(TimeStampedModel):
     warehouse_code = models.CharField(max_length=256, db_index=True)
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
+    store = models.ForeignKey(StoreModel, models.CASCADE)
 
     class Meta:
         verbose_name = "Warehouse"
@@ -117,9 +118,3 @@ class StaticPriorityModel(TimeStampedModel):
     class Meta:
         verbose_name = "Static Priority"
         verbose_name_plural = "Static Priorities"
-
-
-class StoreWarehouseBinding(TimeStampedModel):
-    brand_model = models.ForeignKey(BrandModel, models.CASCADE)
-    store = models.ForeignKey(StoreModel, models.CASCADE)
-    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE)

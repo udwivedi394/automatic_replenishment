@@ -3,35 +3,8 @@
 {% block content %}
   {% load staticfiles %}
   <link href="{% static "css/create_report.css" %}" rel="stylesheet" media="all">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <br>
-  {#  {% if file_name_errors %}#}
-  {#    <p id="center_align_error">The following report names are duplicates:#}
-  {#      {% for report_name, freq in file_name_errors.items %}#}
-  {#        <span id="span_error"> {{ report_name }}</span> : {{ freq }} times#}
-  {#      {% endfor %}#}
-  {#    </p>#}
-  {#  {% endif %}#}
-  {#  {% if csv_name_errors %}#}
-  {#    <p id="center_align_error">The following uploaded csv names are duplicates:#}
-  {#      {% for csv_file_name, freq in csv_name_errors.items %}#}
-  {#        <span id="span_error">  {{ csv_file_name }} </span>: {{ freq }} times#}
-  {#      {% endfor %}#}
-  {#    </p>#}
-  {#  {% endif %}#}
   <h4 id="heading">Create New Brand</h4>
-  <script type="text/javascript">
-    $(function () {
-      $('.add-row').click(function () {
-        return addForm(this, 'form');
-      });
-      $('.delete-row').click(function () {
-        //TODO anylyze why twice for this and once for dynamically added
-        deleteForm(this, 'form');
-        deleteForm(this, 'form');
-      })
-    })
-  </script>
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {% form form=brand_form %}
@@ -42,52 +15,8 @@
     {% endform %}
     {% form form=warehouse_form %}
     {% endform %}
-    {#    {{ brand_form_set.management_form }}#}
-
-    {#    <table class="table table-borderless" id="dynamic_form_table">#}
-    {#      <thead>#}
-    {#      <th scope="col"></th>#}
-    {#      <th scope="col"></th>#}
-    {#      </thead>#}
-    {#      <tbody>#}
-    {#      {% for brand_form in brand_form_set.forms %}#}
-    {#        <tr class="dynamic-form">#}
-    {#          <td class="col-sm-8">#}
-    {#            {% form form=brand_form %}#}
-    {#            {% endform %}#}
-    {#          </td>#}
-    {#          <td id="delete_brand">#}
-    {#            <button id="remove-{{ brand_form.prefix }}-row"#}
-    {#                    class="delete-row btn">Delete#}
-    {#            </button>#}
-    {#          </td>#}
-    {#        </tr>#}
-    {#      {% endfor %}#}
-    {#      </tbody>#}
-    {#    </table>#}
-    {#    <div class="container">#}
-    {#      <button class="add-row btn" id="add_brand">+ Add Brand</button>#}
-    {#    </div>#}
     <br>
     <button type="submit" class="btn">Submit</button>
-    {#    <table class="table table-borderless">#}
-    {#      <thead>#}
-    {#      <th scope="col"></th>#}
-    {#      <th scope="col"></th>#}
-    {#      </thead>#}
-    {#      <tbody>#}
-    {#      <tr class="dynamic-form-adder" style="display: none">#}
-    {#        <td class="col-sm-8">#}
-    {#          {% form form=brand_form_set.empty_form %}#}
-    {#          {% endform %}#}
-    {#        </td>#}
-    {#        <td id="delete_brand">#}
-    {#          <button id="remove-__prefix__-row"#}
-    {#                  class="delete-row btn">Delete#}
-    {#          </button>#}
-    {#        </td>#}
-    {#      </tr>#}
-    {#      </tbody>#}
-    {#    </table>#}
+
   </form>
 {% endblock %}

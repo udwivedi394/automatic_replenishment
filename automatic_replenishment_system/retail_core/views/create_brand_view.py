@@ -1,50 +1,55 @@
 from django.db import transaction
-from django.forms import formset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 
+from automatic_replenishment_system.retail_core.core.brand_saver import BrandCreationProcessManager
 from automatic_replenishment_system.retail_core.forms import BrandForm, StoreForm, ProductForm, WarehouseForm
+
+
+class Brand:
+    def __init__(self, name, ranking_model):
+        self.name = name
+        self.ranking_model = ranking_model
 
 
 class CreateBrandView(View):
     BRAND_FORM_PREFIX = 'brand'
-    CONFIG_FORM_PREFIX = 'config'
+    PRODUCT_FORM_PREFIX = 'product'
+    STORE_FORM_PREFIX = 'store'
+    WAREHOUSE_FORM_PREFIX = 'warehouse'
 
     def get(self, request):
         brand_form = BrandForm(prefix=self.BRAND_FORM_PREFIX)
-        product_form = ProductForm(prefix=self.BRAND_FORM_PREFIX)
-        store_form = StoreForm(prefix=self.BRAND_FORM_PREFIX)
-        warehouse_form = WarehouseForm(prefix=self.BRAND_FORM_PREFIX)
+        product_form = ProductForm(prefix=self.PRODUCT_FORM_PREFIX)
+        store_form = StoreForm(prefix=self.STORE_FORM_PREFIX)
+        warehouse_form = WarehouseForm(prefix=self.WAREHOUSE_FORM_PREFIX)
         return self._render(request, brand_form, product_form, store_form, warehouse_form)
 
     def post(self, request):
         file_name_errors = None
         csv_name_errors = None
-        report_form = ReportForm(request.POST, request.FILES, prefix=self.BRAND_FORM_PREFIX)
-        config_form = ReportConfigForm(request.POST, prefix=self.CONFIG_FORM_PREFIX)
-        brand_form_set = self._get_brand_formset()(request.POST, request.FILES)
+        brand_form = BrandForm(request.POST, request.FILES, prefix=self.BRAND_FORM_PREFIX)
+        product_form = ProductForm(request.POST, request.FILES, prefix=self.PRODUCT_FORM_PREFIX)
+        store_form = StoreForm(request.POST, request.FILES, prefix=self.STORE_FORM_PREFIX)
+        warehouse_form = WarehouseForm(request.POST, request.FILES, prefix=self.WAREHOUSE_FORM_PREFIX)
 
-        if report_form.is_valid() and config_form.is_valid() and brand_form_set.is_valid():
-            file_name_errors, csv_name_errors = self._validate_data(brand_form_set, report_form)
+        if brand_form.is_valid() and product_form.is_valid() and store_form.is_valid() and warehouse_form.is_valid():
             if file_name_errors is None and csv_name_errors is None:
-                report_model = report_form.save()
-                config_model = self._save_model_with_report_foreign_key(config_form, report_model)
-                for brand_form in brand_form_set:
-                    valid_brand = self._save_brand(brand_form, report_model)
-                    if not valid_brand:
-                        break
-                else:
-                    kwargs = {
-                        'report_id': report_model.id
-                    }
-                    ReviewSaver(report_model).save_reviews()
-                    transaction.on_commit(lambda: self._run_processes(report_model, config_model))
-                    return HttpResponseRedirect(reverse('report_details', kwargs=kwargs))
+                brand = self._get_brand(brand_form)
+                product_file = self._get_parameter(product_form, 'products_file')
+                store_file = self._get_parameter(store_form, 'stores_file')
+                warehouse_file = self._get_parameter(warehouse_form, 'warehouse_file')
+                transaction.on_commit(lambda: self._create_brand(brand, product_file, store_file, warehouse_file))
+                # return HttpResponseRedirect(reverse('report_details', kwargs={}))
+                return HttpResponse()
         else:
             print('Invalid Data in form')
-        return self._render(request, report_form, config_form, brand_form_set, file_name_errors, csv_name_errors)
+        return self._render(request, brand_form, product_form, store_form, warehouse_form, file_name_errors, csv_name_errors)
+
+    def _get_parameter(self, form, field_name):
+        return form.cleaned_data.get(field_name)
 
     def _render(self, request, brand_form, product_form, store_form, warehouse_form, file_name_errors=None,
                 csv_name_errors=None):
@@ -59,30 +64,10 @@ class CreateBrandView(View):
         template_name = 'brand/create_brand.html'
         return render(request, template_name, context)
 
-    def _get_brand_formset(self):
-        return formset_factory(BrandModelForm, extra=1, can_delete=True)
+    def _create_brand(self, brand, product_file, store_file, warehouse_file):
+        BrandCreationProcessManager(brand, product_file, store_file, warehouse_file).execute()
 
-    def _save_model_with_report_foreign_key(self, form, report_model):
-        form_model = form.save(commit=False)
-        form_model.report_model = report_model
-        form_model.save()
-        return form_model
-
-    def _save_brand(self, brand_form, report_model):
-        valid_brand = True
-        if not brand_form.is_valid():
-            print('Invalid brand form')
-            valid_brand = False
-        elif not brand_form.cleaned_data.get('name'):
-            print('Empty Brand, no need to save')
-        else:
-            self._save_model_with_report_foreign_key(brand_form, report_model)
-        return valid_brand
-
-    def _run_processes(self, report_model, config_model):
-        ReportProcessManager(report_model, config_model).execute()
-
-    def _validate_data(self, brand_form_set, report_form):
-        file_name_errors, csv_name_errors = NameDuplicateValidator().validate_report_screen(brand_form_set,
-                                                                                            report_form)
-        return file_name_errors, csv_name_errors
+    def _get_brand(self, brand_form):
+        brand_name = self._get_parameter(brand_form, 'name')
+        ranking_model = self._get_parameter(brand_form, 'ranking_model')
+        return Brand(name=brand_name, ranking_model=ranking_model)
