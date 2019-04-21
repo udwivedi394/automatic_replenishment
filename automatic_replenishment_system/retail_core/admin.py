@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from automatic_replenishment_system.retail_core import models
-from automatic_replenishment_system.retail_core.core.brand_one_time_setup.brand_input_file_generator import \
+from automatic_replenishment_system.retail_core.core.brand.brand_input_file_generator import \
     BrandInputFileGenerator
 from automatic_replenishment_system.retail_core.models import BrandModel
 
@@ -28,7 +28,7 @@ class BrandModelAdmin(admin.ModelAdmin):
                                 output_warehouse_list).execute()
 
     def upload_files(self, request, queryset):
-        brand = 'Testing_1'
+        brand = 'Amazon'
         model = 'SalesTransaction'
         csvfile = 'input_data/Sales-1.csv'
         brand_model = BrandModel.objects.get(name=brand)

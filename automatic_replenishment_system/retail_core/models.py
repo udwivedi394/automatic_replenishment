@@ -2,7 +2,7 @@ from django.db import models
 # Create your models here.
 from django.db.models import Model
 
-from automatic_replenishment_system.retail_core.core.constants import RANKING_MODEL_CHOICES, WarehouseConstants
+from automatic_replenishment_system.retail_core.core.constants import RANKING_MODEL_CHOICES
 
 
 class TimeStampedModel(Model):
@@ -98,8 +98,7 @@ class StoreInventoryModel(TimeStampedModel):
 
 class WarehouseInventoryModel(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
-    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE, default=WarehouseModel.objects.get(
-        warehouse_code=WarehouseConstants.DEFAULT_WAREHOUSE_CODE))
+    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE, default=None, null=True)
     product = models.ForeignKey(ProductModel, models.CASCADE)
     date = models.DateField()
     closing_inventory = models.IntegerField()

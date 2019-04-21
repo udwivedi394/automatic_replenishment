@@ -34,12 +34,24 @@ class WarehouseRowSerializer(serializers.Serializer):
         pass
 
 
+class StaticRankRowSerializer(serializers.Serializer):
+    Store_Code = serializers.CharField(max_length=20000, required=True)
+    Static_Priority_Rank = serializers.CharField(max_length=20000, required=True)
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
 class BrandInputSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     ranking_model = serializers.ChoiceField(choices=RANKING_MODEL_CHOICES)
     stores = serializers.ListField(child=StoreRowSerializer(), required=True)
     products = serializers.ListField(child=ProductRowSerializer(), required=True)
     warehouses = serializers.ListField(child=WarehouseRowSerializer(), required=True)
+    static_ranks = serializers.ListField(child=StaticRankRowSerializer(), required=True)
 
     def update(self, instance, validated_data):
         pass

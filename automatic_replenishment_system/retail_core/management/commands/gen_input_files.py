@@ -5,7 +5,7 @@ Helps to generate one-time input files from periodic data
 
 from django.core.management import BaseCommand
 
-from automatic_replenishment_system.retail_core.core.brand_one_time_setup.brand_input_file_generator import BrandInputFileGenerator
+from automatic_replenishment_system.retail_core.core.brand.brand_input_file_generator import BrandInputFileGenerator
 
 
 class Command(BaseCommand):

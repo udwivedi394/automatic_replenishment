@@ -30,3 +30,8 @@ class StoreForm(forms.Form):
 class WarehouseForm(forms.Form):
     warehouse_file = forms.FileField()
     layout = Layout(Row('warehouse_file'))
+
+
+class StoreStaticRankForm(forms.Form):
+    static_rank_file = forms.FileField()
+    layout = Layout(Row('static_rank_file'))

@@ -3,7 +3,7 @@ from django.db import transaction
 from automatic_replenishment_system.retail_core.core.api.data_importers.serializers import BrandInputSerializer
 from automatic_replenishment_system.retail_core.core.constants import BrandFilesConstants
 from automatic_replenishment_system.retail_core.models import BrandModel, ProductModel, StoreModel, WarehouseModel, \
-    StoreWarehouseMappingModel
+    StoreWarehouseMappingModel, StaticPriorityModel
 
 
 class BrandInputData:
@@ -13,6 +13,7 @@ class BrandInputData:
         self.products = None
         self.stores = None
         self.warehouses = None
+        self.static_ranks = None
 
 
 class BrandCreationRequestProcessor:
@@ -25,6 +26,7 @@ class BrandCreationRequestProcessor:
         request_data.stores = serializer.validated_data['stores']
         request_data.products = serializer.validated_data['products']
         request_data.warehouses = serializer.validated_data['warehouses']
+        request_data.static_ranks = serializer.validated_data['static_ranks']
         return request_data
 
 
@@ -42,6 +44,8 @@ class BrandCreationProcessor:
         self._save_models(warehouses, WarehouseModel)
         store_warehouses = self._get_store_warehouses(data.warehouses, warehouses, stores)
         self._save_models(store_warehouses, StoreWarehouseMappingModel)
+        static_ranks = self._get_static_ranks(data.static_ranks, stores, brand)
+        self._save_models(static_ranks, StaticPriorityModel)
 
     def _get_brand(self, name, ranking_model):
         brand = BrandModel(name=name, ranking_model=ranking_model)
@@ -100,3 +104,14 @@ class BrandCreationProcessor:
             warehouse = WarehouseModel(warehouse_code=warehouse_code, brand_model=brand)
             warehouse_list.append(warehouse)
         return warehouse_list
+
+    def _get_static_ranks(self, static_ranks, stores, brand):
+        store_map = self._gen_store_map(stores)
+        static_rank_model_list = list()
+        for static_rank in static_ranks:
+            store_constant = static_rank[BrandFilesConstants.STORE_CODE]
+            store = store_map[store_constant]
+            rank = static_rank['Static_Priority_Rank']
+            static_rank_model = StaticPriorityModel(store=store, static_priority_rank=rank, brand_model=brand)
+            static_rank_model_list.append(static_rank_model)
+        return static_rank_model_list
