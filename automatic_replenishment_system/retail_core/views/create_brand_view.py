@@ -1,10 +1,9 @@
 from django.db import transaction
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
 from django.views import View
 
-from automatic_replenishment_system.retail_core.core.brand_saver import BrandCreationProcessManager
+from automatic_replenishment_system.retail_core.core.brand.brand_saver import BrandCreationProcessManager
 from automatic_replenishment_system.retail_core.forms import BrandForm, StoreForm, ProductForm, WarehouseForm
 
 

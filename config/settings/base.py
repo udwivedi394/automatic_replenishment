@@ -69,10 +69,11 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
+    "django_admin_generator",
 ]
 LOCAL_APPS = [
     "automatic_replenishment_system.users.apps.UsersAppConfig",
-    "automatic_replenishment_system.retail_core.apps.RetailCoreConfig"
+        "automatic_replenishment_system.retail_core.apps.RetailCoreConfig"
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

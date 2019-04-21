@@ -1,7 +1,7 @@
 from django import forms
 from material import Layout, Row
 
-from automatic_replenishment_system.users.models import BrandModel
+from automatic_replenishment_system.retail_core.models import BrandModel
 
 
 class BrandForm(forms.ModelForm):

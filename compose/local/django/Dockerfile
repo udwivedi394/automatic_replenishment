@@ -19,6 +19,9 @@ RUN apk update \
 COPY ./requirements /requirements
 RUN pip install -r /requirements/local.txt
 
+COPY ./new_requirements.txt /requirements/new_requirements.txt
+RUN pip install -r /requirements/new_requirements.txt
+
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r//' /entrypoint
 RUN chmod +x /entrypoint

@@ -29,5 +29,5 @@ class BrandCreationProcessManager:
         return post_data
 
     def _call_api(self, request_parameters):
-        response = RequestMaker().post_request(self.brand_importer_api, request_parameters)
+        response = RequestMaker().post_request(self.brand_importer_api, request_parameters, retry=3)
         return response
