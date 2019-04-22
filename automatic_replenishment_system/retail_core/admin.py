@@ -4,7 +4,7 @@ from django.contrib import admin
 from automatic_replenishment_system.retail_core import models
 from automatic_replenishment_system.retail_core.core.brand.brand_input_file_generator import \
     BrandInputFileGenerator
-from automatic_replenishment_system.retail_core.core.periodic.replinshment_generator import GenReplenishment
+from automatic_replenishment_system.retail_core.core.replenishment_order.replenishment_generator import GenReplenishment
 from automatic_replenishment_system.retail_core.models import BrandModel
 
 

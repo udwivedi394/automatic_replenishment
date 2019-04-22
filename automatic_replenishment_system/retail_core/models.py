@@ -121,3 +121,30 @@ class StaticPriorityModel(TimeStampedModel):
 class StoreWarehouseMappingModel(TimeStampedModel):
     store = models.ForeignKey(StoreModel, models.CASCADE)
     warehouse = models.ForeignKey(WarehouseModel, models.CASCADE)
+
+
+class ReplenishmentOrderModel(TimeStampedModel):
+    brand_model = models.ForeignKey(BrandModel, models.CASCADE)
+    ranking_model = models.CharField(max_length=128, choices=RANKING_MODEL_CHOICES)
+    date = models.DateField()
+    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE)
+    store = models.ForeignKey(StoreModel, models.CASCADE)
+    product = models.ForeignKey(ProductModel, models.CASCADE)
+    replenishment_qty = models.IntegerField()
+
+    class Meta:
+        verbose_name = "Replenishment Order"
+        verbose_name_plural = "Replenishment Orders"
+
+
+class WarehouseProductShortQtyModel(TimeStampedModel):
+    brand_model = models.ForeignKey(BrandModel, models.CASCADE)
+    ranking_model = models.CharField(max_length=128, choices=RANKING_MODEL_CHOICES)
+    date = models.DateField()
+    warehouse = models.ForeignKey(WarehouseModel, models.CASCADE)
+    product = models.ForeignKey(ProductModel, models.CASCADE)
+    short_qty = models.IntegerField()
+
+    class Meta:
+        verbose_name = "Warehouse Short Quantity"
+        verbose_name_plural = "Warehouse Short Quantities"

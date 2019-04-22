@@ -1,5 +1,7 @@
+from django.db import transaction
+
 from automatic_replenishment_system.retail_core.core.periodic.importer_interface import ImporterInterface
-from automatic_replenishment_system.retail_core.core.periodic.replinshment_generator import GenReplenishment
+from automatic_replenishment_system.retail_core.core.replenishment_order.replenishment_generator import GenReplenishment
 from automatic_replenishment_system.retail_core.models import BSQModel, SalesTransaction, StoreInventoryModel, \
     WarehouseInventoryModel
 
@@ -14,6 +16,7 @@ class ReplenishmentManager:
         self.store_inventory_file = store_inventory_file
         self.warehouse_inventory_file = warehouse_inventory_file
 
+    @transaction.atomic()
     def execute(self):
         self._import_files_to_models()
         self._generate_replenishment_order()

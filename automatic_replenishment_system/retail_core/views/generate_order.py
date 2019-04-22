@@ -43,7 +43,7 @@ class GenerateOrderView(View):
         return render(request, template_name, context)
 
     def _save_data_and_generate_order(self, brand_model, generate_order_form):
-        date = self._get_parameter(generate_order_form, 'date')
+        date = self._get_parameter(generate_order_form, 'generation_date')
         bsq_file = self._get_parameter(generate_order_form, 'bsq')
         sales_transactions_file = self._get_parameter(generate_order_form, 'sales_transactions')
         store_inventory_file = self._get_parameter(generate_order_form, 'store_inventory')

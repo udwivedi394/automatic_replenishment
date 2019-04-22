@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from automatic_replenishment_system.retail_core.core.constants import WarehouseConstants
-from automatic_replenishment_system.retail_core.core.periodic.replinshment_generator import ModelExtractor
+from automatic_replenishment_system.retail_core.core.replenishment_order.utils import MapGenerator
 from automatic_replenishment_system.retail_core.core.utils.common import try_timestamp_combinations
 from automatic_replenishment_system.retail_core.models import SalesTransaction, StoreModel, ProductModel, BSQModel, \
     StoreInventoryModel, WarehouseModel, WarehouseInventoryModel
@@ -21,16 +21,6 @@ class DataImporterFactory:
         else:
             raise ValueError('No importer exists for model: {}'.format(model))
         return importer
-
-
-class MapGenerator:
-    def get_model_map(self, brand_model, model_class, key):
-        model_map = dict()
-        query = {'brand_model': brand_model}
-        models = ModelExtractor(model_class, query).execute()
-        for model in models:
-            model_map[getattr(model, key)] = model
-        return model_map
 
 
 # @transaction.atomic()
