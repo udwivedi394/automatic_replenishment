@@ -35,3 +35,22 @@ class WarehouseForm(forms.Form):
 class StoreStaticRankForm(forms.Form):
     static_rank_file = forms.FileField()
     layout = Layout(Row('static_rank_file'))
+
+
+class BrandViewForm(forms.ModelForm):
+    class Meta:
+        model = BrandModel
+        fields = ('ranking_model',)
+
+    layout = Layout(Row('ranking_model'))
+
+
+class GenerateOrderForm(forms.Form):
+    generation_date = forms.DateField()
+    bsq = forms.FileField()
+    sales_transactions = forms.FileField()
+    store_inventory = forms.FileField()
+    warehouse_inventory = forms.FileField()
+
+    layout = Layout(Row('generation_date'),
+                    Row('bsq'), Row('sales_transactions'), Row('store_inventory'), Row('warehouse_inventory'), )

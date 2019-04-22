@@ -1,6 +1,7 @@
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
 
 from automatic_replenishment_system.retail_core.core.brand.brand_saver import BrandCreationProcessManager
@@ -48,8 +49,7 @@ class CreateBrandView(View):
                 static_rank_file = self._get_parameter(static_rank_form, 'static_rank_file')
                 transaction.on_commit(
                     lambda: self._create_brand(brand, product_file, store_file, warehouse_file, static_rank_file))
-                # return HttpResponseRedirect(reverse('report_details', kwargs={}))
-                return HttpResponse()
+                return HttpResponseRedirect(reverse('existing_brands', kwargs={}))
         else:
             print('Invalid Data in form')
         return self._render(request, brand_form, product_form, store_form, warehouse_form, file_name_errors,

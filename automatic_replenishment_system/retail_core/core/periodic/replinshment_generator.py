@@ -270,8 +270,6 @@ class DynamicRankGenerator(StoreRankGenerator):
         start_date = self.date - timedelta(days=7)
         query = {'brand_model': self.brand, 'date__range': (start_date, self.date)}
         sales_transactions = ModelExtractor(SalesTransaction, query=query, prefetch_keys=('store', )).execute()
-        # sales_transactions = SalesTransaction.objects.filter(brand_model=self.brand,
-        #                                                      date__range=(start_date, self.date))
         store_sales_map = defaultdict(int)
         for sales_transaction in sales_transactions:
             store_sales_map[sales_transaction.store] += sales_transaction.quantity

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <ul class="collection with-header">
+            <li class="collection-header"><h4>{{ title }}</h4></li>
+            <table class="table table-bordered table-hover">
+                <tbody>
+                {% for brand in brands %}
+                    <tr>
+                        <td>{{ brand.name }}</td>
+                        <td><a href="{% url 'view_brand' brand.id %}" class="collection-item">Edit</a></td>
+                        <td><a href="{% url 'generate_order' brand.id %}" class="collection-item">Generate Replenishment
+                            Order </a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load material_form %}
+{% block content %}
+  {% load staticfiles %}
+  <link href="{% static "css/progress_tracker.css" %}" rel="stylesheet" media="all">
+  <h2>{{ brand_name }}</h2>
+  <span>
+  <h5>Current Ranking Model: {{ current_ranking_model }}</h5>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% form form=brand_view_form %}
+    {% endform %}
+    <br>
+    <button type="submit" class="btn">Submit</button>
+  </form>
+{% endblock content %}
