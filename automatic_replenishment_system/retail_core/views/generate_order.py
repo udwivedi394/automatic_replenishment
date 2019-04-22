@@ -4,8 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 
-from automatic_replenishment_system.retail_core.core.order.replenishment_order import ReplenishmentManager, \
-    FileModelGenerator
+from automatic_replenishment_system.retail_core.core.order.replenishment_order import ReplenishmentManager
+from automatic_replenishment_system.retail_core.core.file_handler.file_handler import FileModelGenerator
 from automatic_replenishment_system.retail_core.forms import GenerateOrderForm
 from automatic_replenishment_system.retail_core.models import BrandModel
 

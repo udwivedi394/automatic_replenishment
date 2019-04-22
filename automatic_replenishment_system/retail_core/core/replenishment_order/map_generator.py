@@ -54,7 +54,6 @@ class StaticMapGenerator:
             filter_key = FilterKey().warehouse_product_key(warehouse_inventory_row.warehouse,
                                                            warehouse_inventory_row.product)
             warehouse_product_availability_map[filter_key] = warehouse_inventory_row.closing_inventory
-        print(warehouse_product_availability_map)
         return warehouse_product_availability_map
 
     def _store_product_map(self):
