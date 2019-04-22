@@ -4,7 +4,6 @@ from typing import Dict
 from automatic_replenishment_system.retail_core.core.replenishment_order.map_generator import StaticMapGenerator
 from automatic_replenishment_system.retail_core.core.replenishment_order.utils import ModelExtractor, FilterKey, \
     MapGenerator
-from automatic_replenishment_system.retail_core.core.utils.common import try_timestamp_combinations
 from automatic_replenishment_system.retail_core.core.utils.csv_utils import CSVInputOutput
 from automatic_replenishment_system.retail_core.models import BrandModel, BSQModel, ReplenishmentOrderModel, \
     WarehouseProductShortQtyModel, StoreModel, ProductModel, WarehouseModel
@@ -82,7 +81,8 @@ class ConvertShortQtyOrder:
 class GenReplenishment:
     def __init__(self, brand_id: int, date):
         self.brand = self._get_brand_model(brand_id)
-        self.date = try_timestamp_combinations(date, ['%Y-%m-%d'])
+        # self.date = try_timestamp_combinations(date, ['%Y-%m-%d'])
+        self.date = date
         self.map_keeper = StaticMapGenerator(brand=self.brand, date=self.date)
         self.order_attributes = self._get_order_attributes()
 
@@ -142,7 +142,10 @@ class GenReplenishment:
     def _get_short_qty_map(self, overall_product_required_qty):
         short_qty_map = dict()
         for filter, required_qty in overall_product_required_qty.items():
-            available_qty = self.map_keeper.warehouse_prod_avail_qty_map[filter]
+            available_qty = self.map_keeper.warehouse_prod_avail_qty_map.get(filter)
+            if available_qty is None:
+                print('Product {} not part of inventory'.format(filter))
+                continue
             if available_qty >= required_qty:
                 continue
             short_qty_map[filter] = required_qty - available_qty

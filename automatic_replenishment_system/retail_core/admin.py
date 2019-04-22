@@ -6,7 +6,7 @@ from automatic_replenishment_system.retail_core.core.brand.brand_input_file_gene
     BrandInputFileGenerator
 from automatic_replenishment_system.retail_core.core.replenishment_order.replenishment_generator import GenReplenishment
 from automatic_replenishment_system.retail_core.models import BrandModel, ReplenishmentOrderModel, \
-    WarehouseProductShortQtyModel
+    WarehouseProductShortQtyModel, Order
 
 
 class BrandModelAdmin(admin.ModelAdmin):
@@ -102,14 +102,14 @@ class SalesTransactionAdmin(admin.ModelAdmin):
 class BSQAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-
         'brand_model',
         'store',
         'product',
         'bsq',
     )
-    # list_filter = (
-    #     'brand_model',
+    list_filter = (
+        'brand_model',)
+    search_fields = ('product__product_code',)
     #     'store',
     #     'product',
     # )
@@ -143,8 +143,10 @@ class WarehouseInventoryModelAdmin(admin.ModelAdmin):
         'date',
         'closing_inventory',
     )
-    # list_filter = (
-    #     'brand_model',
+    search_fields = ('product__product_code',)
+    list_filter = (
+        'brand_model',
+    )
     #     'product',
     #     'date',
     # )
@@ -180,6 +182,12 @@ class ReplenishmentOrderAdmin(admin.ModelAdmin):
 class WarehouseProductShortQtyAdmin(admin.ModelAdmin):
     list_display = ('brand_model', 'warehouse', 'product', 'short_qty', 'ranking_model', 'date',)
     list_filter = ('date', 'brand_model',)
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('brand_model', 'ranking_model', 'date', 'completed',)
+    list_filter = ('brand_model', 'date', 'completed',)
 
 
 def _register(model, admin_class):

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container">
+    <ul class="collection with-header">
+      <h5>{{ brand_name }}</h5>
+      <li class="collection-header"><h4>{{ title }}</h4></li>
+      <form method="POST" id="opinions-mapper" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="table table-bordered table-hover">
+          <tbody>
+          {% for order in orders %}
+            <tr>
+              <td>{{ order.date }} {{ order.ranking_model }}</td>
+              <td>{{ order.completed }}</td>>
+              <td>
+                <button type="submit" class="btn" name="download_order" value="replenishorder-{{ order.id }}">Download
+                  Replenish Order
+                </button>
+              </td>
+              <td>
+                <button type="submit" class="btn" name="download_order" value="shortqtyorder-{{ order.id }}">Download
+                  Short Quantity
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </form>
+    </ul>
+  </div>
+{% endblock %}

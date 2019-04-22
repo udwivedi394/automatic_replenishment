@@ -15,7 +15,7 @@ class StaticMapGenerator:
         self.store_warehouse_map = self._get_store_warehouse_map()
         self.store_inventory_map = self._get_inventory_map()
         self.store_product_map = self._store_product_map()
-        self.warehouse_prod_avail_qty_map = self._get_warehouse_product_availibity_map()
+        self.warehouse_prod_avail_qty_map = self._get_warehouse_product_availability_map()
 
     def _get_store_rank_map(self):
         store_rank_generator = StoreRankFactory.get_store_rank_generator_by_model(self.brand, self.date,
@@ -44,17 +44,18 @@ class StaticMapGenerator:
             store_inventory_map[filter_key] = store_inventory_model.closing_inventory
         return store_inventory_map
 
-    def _get_warehouse_product_availibity_map(self):
+    def _get_warehouse_product_availability_map(self):
         date = self.date + timedelta(days=1)
         query = {'brand_model': self.brand, 'date': date}
         warehouse_inventory_rows = ModelExtractor(WarehouseInventoryModel, query,
                                                   prefetch_keys=('warehouse', 'product',)).execute()
-        warehouse_product_availibity_map = dict()
+        warehouse_product_availability_map = dict()
         for warehouse_inventory_row in warehouse_inventory_rows:
             filter_key = FilterKey().warehouse_product_key(warehouse_inventory_row.warehouse,
                                                            warehouse_inventory_row.product)
-            warehouse_product_availibity_map[filter_key] = warehouse_inventory_row.closing_inventory
-        return warehouse_product_availibity_map
+            warehouse_product_availability_map[filter_key] = warehouse_inventory_row.closing_inventory
+        print(warehouse_product_availability_map)
+        return warehouse_product_availability_map
 
     def _store_product_map(self):
         query = {'brand_model': self.brand, 'date': self.date}

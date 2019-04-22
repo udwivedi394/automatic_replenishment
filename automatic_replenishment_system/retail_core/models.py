@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 # Create your models here.
 from django.db.models import Model
@@ -123,6 +124,13 @@ class StoreWarehouseMappingModel(TimeStampedModel):
     warehouse = models.ForeignKey(WarehouseModel, models.CASCADE)
 
 
+class Order(TimeStampedModel):
+    brand_model = models.ForeignKey(BrandModel, models.CASCADE)
+    ranking_model = models.CharField(max_length=128, choices=RANKING_MODEL_CHOICES)
+    date = models.DateField()
+    completed = models.BooleanField(default=False)
+
+
 class ReplenishmentOrderModel(TimeStampedModel):
     brand_model = models.ForeignKey(BrandModel, models.CASCADE)
     ranking_model = models.CharField(max_length=128, choices=RANKING_MODEL_CHOICES)
@@ -148,3 +156,12 @@ class WarehouseProductShortQtyModel(TimeStampedModel):
     class Meta:
         verbose_name = "Warehouse Short Quantity"
         verbose_name_plural = "Warehouse Short Quantities"
+
+
+class FileModel(TimeStampedModel):
+    file_type = models.CharField(max_length=128)
+    file = models.FileField(upload_to='reviews/', blank=True)
+
+
+class FileHandler(TimeStampedModel):
+    file_list = ArrayField(models.IntegerField(), blank=True)

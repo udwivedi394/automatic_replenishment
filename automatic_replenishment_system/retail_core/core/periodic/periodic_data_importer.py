@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from automatic_replenishment_system.retail_core.core.constants import WarehouseConstants
 from automatic_replenishment_system.retail_core.core.replenishment_order.utils import MapGenerator
 from automatic_replenishment_system.retail_core.core.utils.common import try_timestamp_combinations
+from automatic_replenishment_system.retail_core.core.utils.model_populator import PopulateModel
 from automatic_replenishment_system.retail_core.models import SalesTransaction, StoreModel, ProductModel, BSQModel, \
     StoreInventoryModel, WarehouseModel, WarehouseInventoryModel
 
@@ -24,13 +25,14 @@ class DataImporterFactory:
 
 
 class BaseImporter(ABC):
-    def __init__(self, brand_model, model_class):
+    def __init__(self, brand_model, model_class, update_in_case_of_change=True, fields_to_ignore=None):
         self.brand_model = brand_model
         self.model_class = model_class
+        self._model_saver = self._get_model_populater(self.model_class, update_in_case_of_change, fields_to_ignore)
 
     def execute(self, csv_rows):
         models = self.import_data(csv_rows)
-        self._save_models(models)
+        # self._save_models(models)
 
     def import_data(self, csv_rows):
         model_list = list()
@@ -38,6 +40,7 @@ class BaseImporter(ABC):
             transaction_model = self.get_transaction_model(row)
             if transaction_model:
                 model_list.append(transaction_model)
+                self.create_or_update(transaction_model)
         return model_list
 
     def _save_models(self, models):
@@ -51,6 +54,13 @@ class BaseImporter(ABC):
     @abstractmethod
     def get_transaction_model(self, row):
         pass
+
+    def create_or_update(self, model):
+        self._model_saver.create_or_update(model)
+
+    def _get_model_populater(self, model, update_in_case_of_change, fields_to_ignore):
+        if model:
+            return PopulateModel(model, update_in_case_of_change, fields_to_ignore)
 
 
 class SalesTransactionImporter(BaseImporter):

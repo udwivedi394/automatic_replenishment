@@ -1,8 +1,10 @@
 import csv
 from csv import DictReader
 from io import StringIO
+from typing import List, Dict
 
 from django.db.models.fields.files import FieldFile
+from django.http import HttpResponse
 
 from automatic_replenishment_system.retail_core.core.utils.file_utils import OSFileOperations
 
@@ -44,3 +46,15 @@ class CSVInputOutput:
             for row in csvf:
                 row_list.append(row)
         return row_list, field_names
+
+
+class ExportAsCsv:
+    def export(self, rowdicts: List[Dict], header: List[str], file_name: str) -> HttpResponse:
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{file_name}"'.format(file_name=file_name)
+        writer = csv.DictWriter(response, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL,
+                                extrasaction='ignore')
+        writer.writeheader()
+        for rowdict in rowdicts:
+            writer.writerow(rowdict)
+        return response

@@ -11,6 +11,8 @@
                         <td><a href="{% url 'view_brand' brand.id %}" class="collection-item">Edit</a></td>
                         <td><a href="{% url 'generate_order' brand.id %}" class="collection-item">Generate Replenishment
                             Order </a></td>
+                        <td><a href="{% url 'download_order' brand.id %}" class="collection-item">View and Download
+                            Orders</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

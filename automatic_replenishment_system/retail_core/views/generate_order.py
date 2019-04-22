@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 
-from automatic_replenishment_system.retail_core.core.order.replenishment_order import ReplenishmentManager
+from automatic_replenishment_system.retail_core.core.order.replenishment_order import ReplenishmentManager, \
+    FileModelGenerator
 from automatic_replenishment_system.retail_core.forms import GenerateOrderForm
 from automatic_replenishment_system.retail_core.models import BrandModel
 
@@ -48,8 +49,9 @@ class GenerateOrderView(View):
         sales_transactions_file = self._get_parameter(generate_order_form, 'sales_transactions')
         store_inventory_file = self._get_parameter(generate_order_form, 'store_inventory')
         warehouse_inventory_file = self._get_parameter(generate_order_form, 'warehouse_inventory')
-        ReplenishmentManager(brand_model, date, bsq_file, sales_transactions_file, store_inventory_file,
-                             warehouse_inventory_file).execute()
+        file_handler = FileModelGenerator(bsq_file, sales_transactions_file, store_inventory_file,
+                                          warehouse_inventory_file).execute()
+        ReplenishmentManager(brand_model, date, file_handler).execute()
 
     def _get_brand_model(self, brand_id):
         brand_model = BrandModel.objects.filter(id=brand_id).first()

@@ -18,6 +18,7 @@ app = Celery("automatic_replenishment_system")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.conf.task_routes = {
     'automatic_replenishment_system.taskapp.tasks.run_replenishment_order': {'queue': 'order_worker'},
+    'automatic_replenishment_system.taskapp.tasks.import_files_to_models': {'queue': 'order_worker'},
 }
 
 
