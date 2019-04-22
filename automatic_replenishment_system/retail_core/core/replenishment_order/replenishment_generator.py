@@ -4,6 +4,7 @@ from typing import Dict
 from automatic_replenishment_system.retail_core.core.replenishment_order.map_generator import StaticMapGenerator
 from automatic_replenishment_system.retail_core.core.replenishment_order.utils import ModelExtractor, FilterKey, \
     MapGenerator
+from automatic_replenishment_system.retail_core.core.utils.common import try_timestamp_combinations
 from automatic_replenishment_system.retail_core.core.utils.csv_utils import CSVInputOutput
 from automatic_replenishment_system.retail_core.models import BrandModel, BSQModel, ReplenishmentOrderModel, \
     WarehouseProductShortQtyModel, StoreModel, ProductModel, WarehouseModel
@@ -79,9 +80,9 @@ class ConvertShortQtyOrder:
 
 
 class GenReplenishment:
-    def __init__(self, brand: BrandModel, date):
-        self.brand = brand
-        self.date = date
+    def __init__(self, brand_id: int, date):
+        self.brand = self._get_brand_model(brand_id)
+        self.date = try_timestamp_combinations(date, ['%Y-%m-%d'])
         self.map_keeper = StaticMapGenerator(brand=self.brand, date=self.date)
         self.order_attributes = self._get_order_attributes()
 
@@ -94,7 +95,7 @@ class GenReplenishment:
         short_qty_models = self._get_short_qty_models(short_qty_map)
         self._save_models(ReplenishmentOrderModel, replenishment_models)
         self._save_models(WarehouseProductShortQtyModel, short_qty_models)
-        return True
+        print('Saved models')
 
     def _get_required_qty_map(self):
         required_qty_map = dict()
@@ -182,3 +183,7 @@ class GenReplenishment:
 
     def _save_models(self, model_class, models):
         model_class.objects.bulk_create(models)
+
+    def _get_brand_model(self, brand_id):
+        brand_model = BrandModel.objects.filter(id=brand_id).first()
+        return brand_model

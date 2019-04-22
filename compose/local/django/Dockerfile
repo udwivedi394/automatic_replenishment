@@ -42,6 +42,10 @@ COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r//' /start-flower
 RUN chmod +x /start-flower
 
+COPY ./compose/local/django/celery/order_worker/start /start-order_worker
+RUN sed -i 's/\r//' /start-order_worker
+RUN chmod +x /start-order_worker
+
 WORKDIR /app
 
 ENTRYPOINT ["/entrypoint"]

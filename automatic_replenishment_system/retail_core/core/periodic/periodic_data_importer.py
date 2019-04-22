@@ -23,7 +23,6 @@ class DataImporterFactory:
         return importer
 
 
-# @transaction.atomic()
 class BaseImporter(ABC):
     def __init__(self, brand_model, model_class):
         self.brand_model = brand_model

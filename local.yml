@@ -61,3 +61,12 @@ services:
     ports:
       - "5555:5555"
     command: /start-flower
+
+  order_worker:
+    <<: *django
+    image: automatic_replenishment_system_local_order_worker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-order_worker

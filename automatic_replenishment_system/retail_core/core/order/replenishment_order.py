@@ -1,9 +1,9 @@
-from django.db import transaction
+import datetime
 
 from automatic_replenishment_system.retail_core.core.periodic.importer_interface import ImporterInterface
-from automatic_replenishment_system.retail_core.core.replenishment_order.replenishment_generator import GenReplenishment
 from automatic_replenishment_system.retail_core.models import BSQModel, SalesTransaction, StoreInventoryModel, \
     WarehouseInventoryModel
+from automatic_replenishment_system.taskapp.tasks import run_replenishment_order
 
 
 class ReplenishmentManager:
@@ -16,7 +16,6 @@ class ReplenishmentManager:
         self.store_inventory_file = store_inventory_file
         self.warehouse_inventory_file = warehouse_inventory_file
 
-    @transaction.atomic()
     def execute(self):
         self._import_files_to_models()
         self._generate_replenishment_order()
@@ -29,4 +28,10 @@ class ReplenishmentManager:
                           file=self.warehouse_inventory_file).execute()
 
     def _generate_replenishment_order(self):
-        GenReplenishment(self.brand_model, self.date).execute()
+        date_string = self._convert_to_proper_format(self.date)
+        run_replenishment_order.delay(self.brand_model.id, date_string)
+
+    def _convert_to_proper_format(self, date):
+        converted_date = datetime.datetime.strftime(date, '%Y-%m-%d')
+        print(converted_date)
+        return converted_date
