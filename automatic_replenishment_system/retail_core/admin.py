@@ -4,6 +4,7 @@ from django.contrib import admin
 from automatic_replenishment_system.retail_core import models
 from automatic_replenishment_system.retail_core.core.brand.brand_input_file_generator import \
     BrandInputFileGenerator
+from automatic_replenishment_system.retail_core.core.periodic.replinshment_generator import GenReplenishment
 from automatic_replenishment_system.retail_core.models import BrandModel
 
 
@@ -15,8 +16,9 @@ class BrandModelAdmin(admin.ModelAdmin):
     )
     search_fields = ('name',)
     # date_hierarchy = 'updated_at'
-    actions = ['gen_input_files', 'upload_files']
+    actions = ['gen_input_files', 'upload_files', 'run_replenishment']
 
+    # TODO remove following actions
     def gen_input_files(self, request, queryset):
         store_inventory = 'input_data/Store_Inventory-1.csv'
         bsq = 'input_data/bsq-1.csv'
@@ -36,8 +38,16 @@ class BrandModelAdmin(admin.ModelAdmin):
         from automatic_replenishment_system.retail_core.core.utils.csv_utils import CSVInputOutput
         ImporterInterface(model_name=model, brand=brand_model, file=csvfile, reader=CSVInputOutput()).execute()
 
+    def run_replenishment(self, request, queryset):
+        brand = 'Amazon'
+        brand_model = BrandModel.objects.get(name=brand)
+        store_inventory = models.StoreInventoryModel.objects.filter().first()
+        date = store_inventory.date
+        GenReplenishment(brand_model, date).execute()
+
     upload_files.short_description = 'Upload Files'
     gen_input_files.short_description = 'Generate Input Files'
+    run_replenishment.short_description = 'Run Replenishment'
 
 
 class ProductModelAdmin(admin.ModelAdmin):

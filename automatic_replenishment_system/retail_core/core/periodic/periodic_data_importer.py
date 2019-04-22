@@ -1,9 +1,8 @@
-import datetime
 from abc import ABC, abstractmethod
 
 from automatic_replenishment_system.retail_core.core.constants import WarehouseConstants
 from automatic_replenishment_system.retail_core.core.periodic.replinshment_generator import ModelExtractor
-from automatic_replenishment_system.retail_core.core.utils.common import try_dateparser
+from automatic_replenishment_system.retail_core.core.utils.common import try_timestamp_combinations
 from automatic_replenishment_system.retail_core.models import SalesTransaction, StoreModel, ProductModel, BSQModel, \
     StoreInventoryModel, WarehouseModel, WarehouseInventoryModel
 
@@ -56,9 +55,9 @@ class BaseImporter(ABC):
         self.model_class.objects.bulk_create(models, batch_size=1000)
 
     def convert_to_date(self, date):
-        probable_dateformats = ['%d/%m/%Y']
-        converted_date = try_dateparser(date, probable_dateformats)
-        return datetime.datetime.strftime(converted_date, '%Y-%m-%d')
+        probable_dateformats = ['%d/%m/%y']
+        converted_date = try_timestamp_combinations(date, probable_dateformats)
+        return converted_date
 
     @abstractmethod
     def get_transaction_model(self, row):
@@ -136,6 +135,6 @@ class WarehouseInventoryImporter(BaseImporter):
             print('Product Code: {} not available'.format(row['Product_Code']))
             return
         warehouse_inventory.product = product
-        warehouse_inventory.date = try_dateparser(row['Date'])
+        warehouse_inventory.date = self.convert_to_date(row['Date'])
         warehouse_inventory.closing_inventory = row['WH_Qty']
         return warehouse_inventory
